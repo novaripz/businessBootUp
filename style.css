@@ -9,7 +9,7 @@ body {
 }
 
 /* header */
-h1 {\
+h1 {
   text-align: center;
   color: #222;
   margin-bottom: 40px;
@@ -61,4 +61,14 @@ h1 {\
 
 .pay:hover {
   background-color: #45a049;
+}
+
+/* responsive */
+@media (max-width: 500px) {
+  body {
+    padding: 10px;
+  }
+  .product {
+    padding: 15px;
+  }
 }
