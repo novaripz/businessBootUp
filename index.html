@@ -1,48 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nova Sells</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nova Shop</title>
+<style>
+  body { font-family: sans-serif; padding: 10px; margin: 0; background:#f9f9f9; }
+  header { display:flex; justify-content: space-between; align-items:center; padding:10px; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,0.1); position:sticky; top:0; z-index:10; }
+  header h1 { margin:0; font-size:20px; }
+  .cart-btn { font-weight:bold; cursor:pointer; }
+
+  .products { display:flex; overflow-x:auto; gap:10px; padding:10px 0; }
+  .product { flex:0 0 80%; background:#fff; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.1); padding:10px; text-align:center; }
+  .product img { width:100%; border-radius:10px; }
+  .product h2 { font-size:16px; margin:5px 0; }
+  .product p { font-size:14px; margin:5px 0; }
+
+  .btn { border:none; border-radius:20px; padding:8px 15px; margin:5px; cursor:pointer; font-weight:bold; }
+  .add { background:#007bff; color:white; }
+  .view { background:#fff; color:#000; border:2px solid #000; }
+
+  .cart-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; }
+  .cart-content { background:#fff; padding:20px; border-radius:10px; width:90%; max-width:400px; }
+  .cart-content h2 { margin-top:0; }
+  .cart-item { display:flex; justify-content:space-between; margin:5px 0; }
+  .pay-options { margin-top:10px; display:flex; flex-direction:column; gap:10px; }
+  .pay-options a { display:block; text-decoration:none; padding:10px; border-radius:20px; text-align:center; font-weight:bold; color:white; }
+
+  .paypal { background:#ffc439; color:#000; }
+  .zelle { background:#4CAF50; }
+  .venmo { background:#3D95CE; }
+</style>
 </head>
 <body>
-  <h1>Nova Sells</h1>
 
-  <div class="product">
-    <h2>Cool Sticker</h2>
+<header>
+  <h1>Nova Shop</h1>
+  <div class="cart-btn" onclick="toggleCart()">Cart 🛒</div>
+</header>
+
+<div class="products">
+  <div class="product" data-name="Cool Sticker" data-price="10">
     <img src="images/sticker.jpg" alt="Sticker">
-    <p>Price: $10</p>
-    <a class="pay" href="zelle://805-364-1112">Pay via Zelle</a>
+    <h2>Cool Sticker</h2>
+    <p>$10</p>
+    <button class="btn add" onclick="addToCart(this)">Add to Cart</button>
+    <button class="btn view" onclick="viewDetails(this)">View Details</button>
   </div>
-
-  <div class="product">
-    <h2>Phone Grip</h2>
+  <div class="product" data-name="Phone Grip" data-price="15">
     <img src="images/grip.jpg" alt="Phone Grip">
-    <p>Price: $15</p>
-    <a class="pay" href="venmo://elfrancotirador">Pay via Venmo</a>
+    <h2>Phone Grip</h2>
+    <p>$15</p>
+    <button class="btn add" onclick="addToCart(this)">Add to Cart</button>
+    <button class="btn view" onclick="viewDetails(this)">View Details</button>
   </div>
+</div>
 
-  <div class="product">
-    <h2>Mini Poster</h2>
-    <img src="images/poster.jpg" alt="Mini Poster">
-    <p>Price: $12</p>
-    <a class="pay" href="zelle://805-364-1112">Pay via Zelle</a>
+<div class="cart-modal" id="cartModal">
+  <div class="cart-content">
+    <h2>Cart</h2>
+    <div id="cartItems"></div>
+    <div class="pay-options">
+      <a href="https://www.paypal.com/paypalme/YOUR_PAYPAL_LINK" target="_blank" class="paypal">Pay via PayPal</a>
+      <a href="#" class="zelle">Pay via Zelle: 805-364-1112</a>
+      <a href="https://venmo.com/YOUR_VENMO_USERNAME" target="_blank" class="venmo">Pay via Venmo: @YOUR_VENMO_USERNAME</a>
+    </div>
+    <p style="font-size:12px; margin-top:10px;">Apple Pay is not supported directly on static pages. Customers can use Apple Pay through PayPal if available.</p>
+    <button onclick="toggleCart()">Close</button>
   </div>
+</div>
 
-  <div class="product">
-    <h2>Keychain</h2>
-    <img src="images/keychain.jpg" alt="Keychain">
-    <p>Price: $8</p>
-    <a class="pay" href="venmo://elfrancotirador">Pay via Venmo</a>
-  </div>
+<script>
+let cart = [];
 
-  <div class="product">
-    <h2>Phone Case</h2>
-    <img src="images/phonecase.jpg" alt="Phone Case">
-    <p>Price: $18</p>
-    <a class="pay" href="zelle://805-364-1112">Pay via Zelle</a>
-  </div>
+function addToCart(button){
+  const prod = button.closest('.product');
+  const name = prod.dataset.name;
+  const price = prod.dataset.price;
+  cart.push({name, price});
+  updateCart();
+  alert(name + " added to cart!");
+}
+
+function viewDetails(button){
+  const prod = button.closest('.product');
+  alert(prod.dataset.name + " costs $" + prod.dataset.price);
+}
+
+function toggleCart(){
+  const modal = document.getElementById('cartModal');
+  modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+}
+
+function updateCart(){
+  const container = document.getElementById('cartItems');
+  container.innerHTML = "";
+  cart.forEach((item, index)=>{
+    container.innerHTML += `<div class="cart-item">${item.name} - $${item.price}</div>`;
+  });
+}
+</script>
 
 </body>
 </html>
