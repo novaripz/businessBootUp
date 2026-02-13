@@ -92,8 +92,9 @@
   /* payment buttons inside cart */
   .pay-options { margin-top:15px; display:flex; flex-direction:column; gap:10px; }
   .pay-options a { display:block; text-decoration:none; padding:12px; border-radius:25px; text-align:center; font-weight:bold; color:white; }
-  .paypal { background: navy; }
-  .zelle { background: purple; }
+  .paypal { background: #bfbfbf !important; /* gray fill */ color: #000 !important; position: relative; overflow: hidden; }
+  .paypal::after { content: ""; position: absolute; top: -20%; right: -20%; width: 150%; height: 4px; background: white; transform: rotate(-45deg); }
+  .zelle { background: #811EA6;}
   .venmo { background: #3D95CE; }
 
   /* close bubble */
