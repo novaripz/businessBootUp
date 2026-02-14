@@ -14,7 +14,7 @@
   <div class="cart-btn" onclick="toggleCart()">Cart 🛒</div>
 </header>
 
-<div class="products">
+<main class="products">
 
   <div class="product"
        data-name="Cool Sticker"
@@ -24,7 +24,6 @@
     <h2>Cool Sticker</h2>
     <p>$10</p>
     <button class="btn add" onclick="addToCart(this)">Add to Cart</button>
-    <button class="btn view" onclick="viewDetails(this)">View Details</button>
   </div>
 
   <div class="product"
@@ -35,10 +34,9 @@
     <h2>Phone Grip</h2>
     <p>$15</p>
     <button class="btn add" onclick="addToCart(this)">Add to Cart</button>
-    <button class="btn view" onclick="viewDetails(this)">View Details</button>
   </div>
 
-</div>
+</main>
 
 <!-- CART MODAL -->
 <div class="cart-modal" id="cartModal">
@@ -46,16 +44,22 @@
     <h2>Your Cart</h2>
     <div id="cartItems"></div>
 
+    <div class="total-line">
+      Total: $<span id="cartTotal">0.00</span>
+    </div>
+
     <div class="pay-options">
-      <a href="#" class="paypal">Pay via PayPal (Coming Soon)</a>
-      <a href="#" class="zelle">Pay via Zelle: 805-364-1112</a>
-      <a href="#" class="applepay">Pay with Apple Pay</a>
+      <a class="paypal">Pay via PayPal (Coming Soon)</a>
+      <a class="zelle">Pay via Zelle: 805-364-1112</a>
+      <a href="#" onclick="payWithAppleCash()" class="applecash">
+        Pay with Apple Cash
+      </a>
       <a href="https://venmo.com/santinlz" target="_blank" class="venmo">
         Pay via Venmo: @santinlz
       </a>
     </div>
 
-    <button class="close-btn" onclick="toggleCart()">X</button>
+    <button class="close-btn" onclick="toggleCart()">Close</button>
   </div>
 </div>
 
@@ -63,41 +67,70 @@
 let cart = [];
 
 function addToCart(button){
-  const product = button.closest('.product');
+  const product = button.closest(".product");
   const name = product.dataset.name;
-  const price = product.dataset.price;
+  const price = parseFloat(product.dataset.price);
   const image = product.dataset.image;
 
   cart.push({ name, price, image });
   updateCart();
-  alert(name + " added to cart!");
-}
-
-function viewDetails(button){
-  const product = button.closest('.product');
-  alert(product.dataset.name + " costs $" + product.dataset.price);
 }
 
 function toggleCart(){
-  const modal = document.getElementById('cartModal');
+  const modal = document.getElementById("cartModal");
   modal.style.display =
-    modal.style.display === 'flex' ? 'none' : 'flex';
+    modal.style.display === "flex" ? "none" : "flex";
 }
 
 function updateCart(){
-  const container = document.getElementById('cartItems');
-  container.innerHTML = "";
+  const container = document.getElementById("cartItems");
+  const totalDisplay = document.getElementById("cartTotal");
 
-  cart.forEach(item => {
+  container.innerHTML = "";
+  let total = 0;
+
+  cart.forEach((item, index) => {
+    total += item.price;
+
     container.innerHTML += `
       <div class="cart-item">
         <img src="${item.image}">
-        <div class="cart-item-info">
+        <div class="cart-info">
           ${item.name} - $${item.price}
         </div>
       </div>
     `;
   });
+
+  totalDisplay.textContent = total.toFixed(2);
+}
+
+function payWithAppleCash(){
+  if(cart.length === 0){
+    alert("Your cart is empty.");
+    return;
+  }
+
+  let total = 0;
+  let itemsText = "";
+
+  cart.forEach(item => {
+    total += item.price;
+    itemsText += `${item.name} ($${item.price}), `;
+  });
+
+  itemsText = itemsText.slice(0, -2);
+
+  const message =
+    `Hi! I'd like to pay with Apple Cash.\n` +
+    `Items: ${itemsText}\n` +
+    `Total: $${total.toFixed(2)}`;
+
+  const phoneNumber = "8053641112";
+  const smsURL =
+    `sms:${phoneNumber}?&body=${encodeURIComponent(message)}`;
+
+  window.location.href = smsURL;
 }
 </script>
 
